@@ -150,6 +150,9 @@ void listarMarcacoesDia(void) {
 
   pegaDia(dia);
 
+
+
+
   cout << '\n';
   cout << "LISTAGEM DE CLIENTES" << endl;
   cout << '\n';
