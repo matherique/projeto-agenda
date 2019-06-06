@@ -1,8 +1,10 @@
-#include <windows.h>
 #include <iostream>
+#include <iomanip>
+#include <string>
+#include <windows.h>
 #include "bancodados.h"
 #include "ecra.h"
-#include <string>
+
 using namespace std;
 
 int opcao = 0;
@@ -14,10 +16,16 @@ struct cliente {
   int hora;
 };
 
+void cabecalho(void) {
+  color(0, 14);
+  cout << "*** AGENDA PARA MARCACAO DE ATENDIMENTO ***" << endl;
+  color(0, 15);
+  cout << "\n\n";
+}
+
 void exibirMenu(void) {
   int o;
-  color(0, 14); cout << "*** AGENDA PARA MARCACAO DE ATENDIMENTO ***" << endl; color(0, 15);
-  cout << "\n\n";
+  cabecalho();
   cout << "MENU PRINCIPAL" << endl;
   cout << "\n\n";
   cout << "[1] MARCAR ATENDIMENTO" << endl;
@@ -34,7 +42,9 @@ void exibirMenu(void) {
 
 void voltar(void){
   position(rows - 2, 1);
-  color(0, 14); cout << "Tecle <Enter> para ir ao menu"; color(0, 15);
+  color(0, 14);
+  cout << "Tecle <Enter> para ir ao menu";
+  color(0, 15);
   cin.get();
   clear();
   return;
@@ -79,8 +89,7 @@ void marcarAtendimento(void) {
   char nome[51];
   cliente cad_cliente;
 
-  color(0, 14); cout << "*** AGENDA PARA MARCACAO DE ATENDIMENTO ***" << endl; color(0, 15);
-  cout << "\n\n";
+  cabecalho();
   cout << "MARCAR ATENDIMENTO" << endl;
   cout << "\n\n";
 
@@ -102,6 +111,39 @@ void marcarAtendimento(void) {
   voltar();
 }
 
+void mapaHorarios (void) {
+  int horarios[32][10];
+  for (int i = 0; i <= 31; i++) {
+    for (int j = 0; j < 10; j++) {
+      horarios[i][j] = 0;
+    }
+  }
+
+  // debug
+  // int a = 31;
+  // int b = 14 - 8;
+  // horarios[a][b] = 1;
+
+  cabecalho();
+  cout << "MAPA DOS HORARIOS OCUPADOS" << endl;
+  cout << "\n\n";
+
+  cout << setiosflags(ios::right);
+  cout << setw(5) << "HORA " << setw(11) << "1" << setw(10) << "2" << setw(11) << "3 " << endl;
+  cout << setw(5) << "" << setw(11) << "1234567890" << setw(10) << "1234567890" << setw(10) << "12345678901" << endl;
+  for (int j = 0; j < 10; j++) {
+    cout << setw(5) << j + 8 << " ";
+    for (int i = 1; i <= 31; i++) {
+      if (horarios[i][j] == 0)
+        cout << ".";
+      else
+        cout << "*";
+    }
+    cout << endl;
+  }
+  voltar();
+}
+
 
 int main (void) {
   getRowCols(rows, cols);
@@ -114,7 +156,7 @@ int main (void) {
         //case  2: desmarcarAtendimento();     break;
         //case  3: listarMarcacoesDia();       break;
         //case  4: clientesMarcadosDia();      break;
-        //case  5: mapaHorarios();             break;
+        case  5: mapaHorarios();             break;
       }
     }
   }
