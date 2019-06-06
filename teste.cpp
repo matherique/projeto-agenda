@@ -22,3 +22,5 @@ int getrowscols(void) {
     std::cout << "rows: " << rows << std::endl;
     return 0;
 }
+
+

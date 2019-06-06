@@ -58,7 +58,7 @@ void pegaDia(int &dia) {
     cin.ignore(80, '\n');
     if (dia < 1 || dia > 31) {
       position(rows - 3, 1);
-      cout << "Dia invalido";
+      cout << "DIA INVALIDO";
       position(7, 22);
       clearline();
     } else {
@@ -75,7 +75,7 @@ void pegaHora(int &hora) {
     cin.ignore(80, '\n');
     if (hora < 8 || hora > 17) {
       position(rows - 3, 1);
-      cout << "Hora invalida";
+      cout << "HORA INVALIDA";
       position(8, 22);
       clearline();
     } else {
@@ -85,7 +85,6 @@ void pegaHora(int &hora) {
 }
 
 void marcarAtendimento(void) {
-  int dia, hora;
   char nome[51];
   cliente cad_cliente;
 
@@ -98,6 +97,7 @@ void marcarAtendimento(void) {
 
   cout << "INFORME O NOME ....: ";
   cin.getline(nome, sizeof(nome));
+
   cad_cliente.nome.assign(nome);
 
 //  debug
@@ -108,6 +108,56 @@ void marcarAtendimento(void) {
 
   position(rows - 3, 1);
   cout << "SUCESSO: HORARIO AGENDADO" << endl;
+  voltar();
+}
+
+void desmarcarAtendimento(void) {
+  char nome[51] = "matheus";
+  char resp;
+  cliente rm_cliente;
+
+  cabecalho();
+  cout << "DESMARCAR ATENDIMENTO" << endl;
+  cout << "\n\n";
+
+  pegaDia(rm_cliente.dia);
+  pegaHora(rm_cliente.hora);
+
+  //  debug
+  //  cout << "Dia: |" << rm_cliente.dia << "|" << endl;
+  //  cout << "Hora: |" << rm_cliente.hora << "|" << endl;
+  //  cout << "Nome: |" << rm_cliente.nome << "|" << endl;
+
+  cout << "HORAIO RESERVADO PARA " << nome << "."<< endl;
+  cout << "DESMARCA? (S/N): ";
+  cin.get(resp);
+  cin.ignore(80, '\n');
+
+  if (toupper(resp) == 'S') {
+    position(rows - 3, 1);
+    cout << "HORARIO LIBERADO" << endl;
+    voltar();
+  }
+  clear();
+}
+
+void listarMarcacoesDia(void) {
+  int dia;
+
+  cabecalho();
+  cout << "CLIENTES DO DIA" << endl;
+  cout << "\n\n";
+
+  pegaDia(dia);
+
+  cout << '\n';
+  cout << "LISTAGEM DE CLIENTES" << endl;
+  cout << '\n';
+
+  for (int i = 0; i < 10; i++) {
+    cout << setw(3) << i + 8 << " HORAS" << endl;
+  }
+
   voltar();
 }
 
@@ -129,8 +179,9 @@ void mapaHorarios (void) {
   cout << "\n\n";
 
   cout << setiosflags(ios::right);
-  cout << setw(5) << "HORA " << setw(11) << "1" << setw(10) << "2" << setw(11) << "3 " << endl;
+  cout << setw(5) << " HORA" << setw(11) << "1" << setw(10) << "2" << setw(11) << "3 " << endl;
   cout << setw(5) << "" << setw(11) << "1234567890" << setw(10) << "1234567890" << setw(10) << "12345678901" << endl;
+
   for (int j = 0; j < 10; j++) {
     cout << setw(5) << j + 8 << " ";
     for (int i = 1; i <= 31; i++) {
@@ -141,9 +192,9 @@ void mapaHorarios (void) {
     }
     cout << endl;
   }
+
   voltar();
 }
-
 
 int main (void) {
   getRowCols(rows, cols);
@@ -153,13 +204,13 @@ int main (void) {
     if (opcao != 6){
       switch (opcao){
         case  1: marcarAtendimento();        break;
-        //case  2: desmarcarAtendimento();     break;
-        //case  3: listarMarcacoesDia();       break;
+        case  2: desmarcarAtendimento();     break;
+        case  3: listarMarcacoesDia();       break;
         //case  4: clientesMarcadosDia();      break;
         case  5: mapaHorarios();             break;
       }
     }
   }
-
+  position(rows+1, 1);
   return 0;
 }
