@@ -10,12 +10,6 @@ using namespace std;
 int opcao = 0;
 int rows, cols;
 
-struct cliente {
-  string nome;
-  int dia;
-  int hora;
-};
-
 void cabecalho(void) {
   color(0, 14);
   cout << "*** AGENDA PARA MARCACAO DE ATENDIMENTO ***" << endl;
@@ -105,7 +99,8 @@ void marcarAtendimento(void) {
 //  cout << "Hora: |" << cad_cliente.hora << "|" << endl;
 //  cout << "Nome: |" << cad_cliente.nome << "|" << endl;
 
-
+  cadastrar(cad_cliente);
+  listar();
   position(rows - 3, 1);
   cout << "SUCESSO: HORARIO AGENDADO" << endl;
   voltar();
@@ -150,9 +145,6 @@ void listarMarcacoesDia(void) {
 
   pegaDia(dia);
 
-
-
-
   cout << '\n';
   cout << "LISTAGEM DE CLIENTES" << endl;
   cout << '\n';
@@ -164,18 +156,35 @@ void listarMarcacoesDia(void) {
   voltar();
 }
 
+void clientesMarcadosDia (void) {
+  int dia;
+  char nome[51];
+
+  cabecalho();
+  cout << "HORARIOS DE UM CLIENTE" << endl;
+  cout << "\n\n";
+
+  cout << "ENTRE O NOME DO CLIENTE: ";
+  cin.getline(nome, sizeof(nome));
+
+  cout << '\n';
+  cout << "HORARIOS PARA O CLIENTE " << nome << endl;
+  cout << '\n';
+  voltar();
+}
+
 void mapaHorarios (void) {
-  int horarios[32][10];
-  for (int i = 0; i <= 31; i++) {
+  int horarios[31][10];
+  for (int i = 0; i < 31; i++) {
     for (int j = 0; j < 10; j++) {
       horarios[i][j] = 0;
     }
   }
 
   // debug
-  // int a = 31;
-  // int b = 14 - 8;
-  // horarios[a][b] = 1;
+   int a = 31 - 1;
+   int b = 14 - 8;
+   horarios[a][b] = 1;
 
   cabecalho();
   cout << "MAPA DOS HORARIOS OCUPADOS" << endl;
@@ -187,7 +196,7 @@ void mapaHorarios (void) {
 
   for (int j = 0; j < 10; j++) {
     cout << setw(5) << j + 8 << " ";
-    for (int i = 1; i <= 31; i++) {
+    for (int i = 0; i < 31; i++) {
       if (horarios[i][j] == 0)
         cout << ".";
       else
@@ -200,20 +209,23 @@ void mapaHorarios (void) {
 }
 
 int main (void) {
+  start();
   getRowCols(rows, cols);
+  clear();
+
   while (opcao != 6) {
     exibirMenu();
+
     clear();
     if (opcao != 6){
       switch (opcao){
         case  1: marcarAtendimento();        break;
         case  2: desmarcarAtendimento();     break;
         case  3: listarMarcacoesDia();       break;
-        //case  4: clientesMarcadosDia();      break;
+        case  4: clientesMarcadosDia();      break;
         case  5: mapaHorarios();             break;
       }
     }
   }
-  position(rows+1, 1);
   return 0;
 }
