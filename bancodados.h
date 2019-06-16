@@ -35,7 +35,7 @@ void listar() {
   for (int i = 0; i < n; i++) {
     cliente teste;
     std::cout << i * tStruct << std::endl;
-    // arquivo.seekg(i * tStruct, std::ios_base::beg);
+     arquivo.seekg(i * tStruct, std::ios_base::beg);
     arquivo.seekg(i * sizeof(struct cliente), std::ios_base::beg);
     arquivo.read(reinterpret_cast<char*>(&teste), sizeof(struct cliente));
     std::cout << "nome: " << teste.nome << std::endl;
