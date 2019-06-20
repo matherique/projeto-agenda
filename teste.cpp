@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <typeinfo>
+#define DB "database.abc"
 using namespace std;
 
 struct cliente {
@@ -9,18 +11,18 @@ struct cliente {
   int dia;
   int hora;
 };
-char n[120];
-
 
 void cadastrar (string nome) {
-  fstream file("teste2.t", ios_base::out | ios_base::binary | ios_base::app);
+  char n[100];
+  fstream file(DB, ios_base::out | ios_base::binary | ios_base::app);
   strcpy(n, nome.c_str());
   file.write(reinterpret_cast<char*>(&n), sizeof(n));
   file.close();
 }
 
 void listar(struct cliente lista[]) {
-  fstream file2("teste2.t", ios_base::in | ios_base::binary );
+  char n[120];
+  fstream file2(DB, ios_base::in | ios_base::binary);
   file2.seekg(0, ios_base::end);
 
   long TAMANHO = file2.tellg();
@@ -28,7 +30,7 @@ void listar(struct cliente lista[]) {
 
   for (int i = 0; i < NR_REGS; i++) {
     string nome;
-    file2.seekg(i *  sizeof(n), ios_base::beg);
+    file2.seekg(i * sizeof(n), ios_base::beg);
     file2.read(reinterpret_cast<char*>(&n), sizeof(n));
 
     nome.assign(n);
@@ -43,8 +45,9 @@ void listar(struct cliente lista[]) {
   file2.close();
 }
 
-int getSize(void) {
-  fstream file2("teste2.t", ios_base::in | ios_base::binary );
+int pegaQtdRegistros(void) {
+  char n[120];
+  fstream file2("teste2.t", ios_base::in | ios_base::binary);
   file2.seekg(0, ios_base::end);
   long TAMANHO = file2.tellg();
   long NR_REGS = TAMANHO / sizeof(n);
@@ -52,7 +55,7 @@ int getSize(void) {
   return NR_REGS;
 }
 
-string addFillZero(int number) {
+string adicionaZero(int number) {
   string n = to_string(number);
   if (n.length() == 1) {
       return "0" + n;
@@ -60,24 +63,26 @@ string addFillZero(int number) {
   return n;
 }
 
-string  convertStructToString( cliente dados) {
+string  converteStructParaString( cliente dados) {
   string ret, nome, dia, hora;
   nome = dados.nome;
-  dia = addFillZero(dados.dia);
-  hora = addFillZero(dados.hora);
+  dia = adicionaZero(dados.dia);
+  hora = adicionaZero(dados.hora);
 
   return nome + dia + hora;
 }
 
 int main(void) {
+
   cliente teste;
 
-  teste.nome = "camila";
+  teste.nome = "matheus henrique";
   teste.dia = 1;
   teste.hora = 8;
-  string result = convertStructToString(teste);
+
+  string result = converteStructParaString(teste);
   cadastrar(result);
-  int n = getSize();
+  int n = pegaQtdRegistros();
   cliente lista[n];
   listar(lista);
 
@@ -90,5 +95,3 @@ int main(void) {
   }
   return 0;
 }
-
-
