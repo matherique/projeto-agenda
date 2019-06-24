@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 
-#define DB "database.abc"
+#define DB "database.b"
 #define TAMANHO_CHAR 120
 
 struct cliente {
@@ -106,46 +106,6 @@ namespace bancodados {
     }
 
     return;
-  }
-
-  cliente * listar2(bool debug = false) {
-    char dados[TAMANHO_CHAR];
-    std::ifstream arquivo(DB, std::ios_base::binary);
-
-    arquivo.seekg(0, std::ios_base::end);
-
-    long tamanho = arquivo.tellg();
-    int numero_registros = tamanho / sizeof(dados);
-
-    static cliente clientes[10];
-    for (int i = 0; i < numero_registros; i++) {
-      std::string c;
-      arquivo.seekg(i * sizeof(dados), std::ios_base::beg);
-      arquivo.read(reinterpret_cast<char*>(&dados), sizeof(dados));
-
-      c.assign(dados);
-
-      std::string nome = c.substr(0, c.length() - 5);
-      int dia = stoi(c.substr(c.length() - 5, 2));
-      int hora = stoi(c.substr(c.length() - 3, 2));
-      int status = stoi(c.substr(c.length() - 1));
-
-      clientes[i].nome = nome;
-      clientes[i].dia = dia;
-      clientes[i].hora = hora;
-      clientes[i].status = (status == 1) ? true : false;
-
-
-      if (debug) {
-        std::cout << "Nome: " << nome << std::endl;
-        std::cout << "Data: " << dia << std::endl;
-        std::cout << "Hora: " << hora << std::endl;
-        std::cout << "Status: " << status << std::endl;
-        std::cout << "=====================================================" << std::endl;
-      }
-    }
-
-    return clientes;
   }
 
   // atualiza uma determinada linha do arquivo
