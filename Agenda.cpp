@@ -12,35 +12,38 @@ int rows, cols;
 
 
 void mensagem(string mensagem) {
-  position(rows - 3, 1);
+  position(rows - 3, 2);
   cout << mensagem << endl;
 }
 
-void cabecalho(void) {
+void cabecalho(string titulo) {
+  position(1, (cols - 43) / 2);
   color(0, 14);
   cout << "*** AGENDA PARA MARCACAO DE ATENDIMENTO ***" << endl;
   color(0, 15);
   cout << "\n\n";
+  int cpos = (cols - titulo.size()) / 2;
+  position(3, cpos);
+  cout << titulo << endl;
+  cout << "\n\n";
 }
 
 void exibirMenu(void) {
-  cabecalho();
-  cout << "MENU PRINCIPAL" << endl;
-  cout << "\n\n";
-  cout << "[1] MARCAR ATENDIMENTO" << endl;
-  cout << "[2] DESMARCAR ATENDIMENTO" << endl;
-  cout << "[3] LISTAR MARCACOES DO DIA" << endl;
-  cout << "[4] CLIENTES MARCADOS NO DIA" << endl;
-  cout << "[5] MAPA DOS HORARIOS LIVRES" << endl;
-  cout << "[6] FIM DO PROGRAMA" << endl;
-  cout << '\n';
-  cout << "==> ";
+  cabecalho("MENU PRINCIPAL");
+  position(6, (cols - 43) / 2);  cout << "    [1] MARCAR ATENDIMENTO" << endl;
+  position(7, (cols - 43) / 2);  cout << "    [2] DESMARCAR ATENDIMENTO" << endl;
+  position(8, (cols - 43) / 2);  cout << "    [3] LISTAR MARCACOES DO DIA" << endl;
+  position(9, (cols - 43) / 2);  cout << "    [4] CLIENTES MARCADOS NO DIA" << endl;
+  position(10, (cols - 43) / 2); cout << "    [5] MAPA DOS HORARIOS LIVRES" << endl;
+  position(11, (cols - 43) / 2); cout << "    [6] FIM DO PROGRAMA" << endl;
+  position(12, (cols - 43) / 2); cout << '\n';
+  position(13, (cols - 43) / 2); cout << "    ==> ";
   cin >> opcao;
   cin.ignore(80, '\n');
 }
 
 void voltar(void){
-  position(rows - 2, 1);
+  position(rows - 2, 2);
   color(0, 14);
   cout << "Tecle <Enter> para ir ao menu";
   color(0, 15);
@@ -69,7 +72,7 @@ bool horarioOcupado(int dia, int hora) {
 
 int pegaDia() {
   int dia;
-  cout << "INFORME O DIA .....: ";
+  cout << " INFORME O DIA .....: ";
 
   while (true) {
     cin >> dia;
@@ -86,7 +89,7 @@ int pegaDia() {
 
 int pegaHora() {
   int hora;
-  cout << "INFORME A HORA ....: ";
+  cout << " INFORME A HORA ....: ";
 
   while (true) {
     cin >> hora;
@@ -113,9 +116,8 @@ void marcarAtendimento(void) {
   int dia, hora;
   cliente cadastrarCliente;
 
-  cabecalho();
-  cout << "MARCAR ATENDIMENTO" << endl;
-  cout << "\n\n";
+  cabecalho("MARCAR ATENDIMENTO");
+
 
   dia = pegaDia();
   hora = pegaHora();
@@ -123,7 +125,7 @@ void marcarAtendimento(void) {
   if (horarioOcupado(dia, hora)) {
     mensagem("HORARIO OCUPADO");
   } else {
-    cout << "INFORME O NOME ....: ";
+    cout << " INFORME O NOME ....: ";
     cin.getline(nome, sizeof(nome));
 
     cadastrarCliente.nome.assign(nome);
@@ -132,7 +134,7 @@ void marcarAtendimento(void) {
 
     bancodados::cadastrar(cadastrarCliente);
 
-    mensagem("SUCESSO: HORARIO AGENDADO" );
+    mensagem("SUCESSO: HORARIO AGENDADO!");
   }
   voltar();
 }
@@ -141,9 +143,7 @@ void desmarcarAtendimento(void) {
   char resp;
   int dia, hora;
 
-  cabecalho();
-  cout << "DESMARCAR ATENDIMENTO" << endl;
-  cout << "\n\n";
+  cabecalho("DESMARCAR ATENDIMENTO");
 
   dia = pegaDia();
   hora = pegaHora();
@@ -160,8 +160,8 @@ void desmarcarAtendimento(void) {
   }
 
   if (posicao >= 0) {
-    cout << "HORAIO RESERVADO PARA " << clientes[posicao].nome << "."<< endl;
-    cout << "DESMARCA? (S/N): ";
+    cout << " HORAIO RESERVADO PARA " << clientes[posicao].nome << "."<< endl;
+    cout << " DESMARCA? (S/N): ";
     cin.get(resp);
     cin.ignore(80, '\n');
 
@@ -185,14 +185,12 @@ void desmarcarAtendimento(void) {
 void listarMarcacoesDia(void) {
   int dia, horas[10];
 
-  cabecalho();
-  cout << "CLIENTES DO DIA" << endl;
-  cout << "\n\n";
+  cabecalho("CLIENTES DO DIA");
 
   dia = pegaDia();
 
   cout << '\n';
-  cout << "LISTAGEM DE CLIENTES" << endl;
+  cout << " LISTAGEM DE CLIENTES" << endl;
   cout << '\n';
 
   int n = bancodados::qtdCadastrados();
@@ -212,9 +210,9 @@ void listarMarcacoesDia(void) {
   for (int i = 0; i < 10; i++) {
     if (horas[i] >= 0) {
       int index = horas[i];
-      cout << setw(3) << i + 8 << " HORAS   " << clientes[index].nome<< endl;
+      cout << setw(4) << i + 8 << " HORAS   " << clientes[index].nome<< endl;
     } else {
-      cout << setw(3) << i + 8 << " HORAS" << endl;
+      cout << setw(4) << i + 8 << " HORAS" << endl;
     }
   }
 
@@ -226,17 +224,15 @@ void clientesMarcadosDia (void) {
   char nm[TAMANHO_CHAR];
   string nome;
 
-  cabecalho();
-  cout << "HORARIOS DE UM CLIENTE" << endl;
-  cout << "\n\n";
+  cabecalho("HORARIOS DE UM CLIENTE");
 
-  cout << "ENTRE O NOME DO CLIENTE: ";
+  cout << " ENTRE O NOME DO CLIENTE: ";
   cin.getline(nm, sizeof(nm));
 
   nome.assign(nm);
 
   cout << '\n';
-  cout << "HORARIOS PARA O CLIENTE " << nome << endl;
+  cout << " HORARIOS PARA O CLIENTE " << nome << endl;
   cout << '\n';
 
   int n = bancodados::qtdCadastrados();
@@ -273,15 +269,13 @@ void mapaHorarios (void) {
     }
   }
 
-  cabecalho();
-  cout << "MAPA DOS HORARIOS OCUPADOS" << endl;
-  cout << "\n\n";
-
+  cabecalho("MAPA DOS HORARIOS OCUPADOS");
   cout << setiosflags(ios::right);
-  cout << setw(5) << " HORA" << setw(11) << "1" << setw(10) << "2" << setw(11) << "3 " << endl;
-  cout << setw(5) << "" << setw(11) << "1234567890" << setw(10) << "1234567890" << setw(10) << "12345678901" << endl;
+  position(6, (cols - 38) / 2); cout << setw(5) << " HORA" << setw(11) << "1" << setw(10) << "2" << setw(11) << "3 " << endl;
+  position(7, (cols - 38) / 2); cout << setw(5) << "" << setw(11) << "1234567890" << setw(10) << "1234567890" << setw(10) << "12345678901" << endl;
 
   for (int j = 0; j < 10; j++) {
+    position(8 + j, (cols - 38) / 2);
     cout << setw(5) << j + 8 << " ";
     for (int i = 0; i < 31; i++) {
       if (horarios[i][j] == 0)

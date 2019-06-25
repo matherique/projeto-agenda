@@ -53,8 +53,10 @@ namespace bancodados {
     hora = _adicionaZero(dados.hora);
     status = (dados.status) ? '1' : '0';
 
-    return nome + dia + hora + status;
+    return nome + "-" + dia + "-" + hora + "-" +status;
   }
+
+  // matheus henrique-12-12-1
 
   // cadastra struct convertendo para char
   void cadastrar (struct cliente dadosCliente){
@@ -85,9 +87,9 @@ namespace bancodados {
 
       c.assign(dados);
 
-      std::string nome = c.substr(0, c.length() - 5);
-      int dia = stoi(c.substr(c.length() - 5, 2));
-      int hora = stoi(c.substr(c.length() - 3, 2));
+      std::string nome = c.substr(0, c.length() - 8);
+      int dia = stoi(c.substr(c.length() - 7, 2));
+      int hora = stoi(c.substr(c.length() - 4, 2));
       int status = stoi(c.substr(c.length() - 1));
 
       clientes[i].nome = nome;
@@ -96,7 +98,7 @@ namespace bancodados {
       clientes[i].status = (status == 1) ? true : false;
 
     }
-    arquivo.close())
+    arquivo.close();
     return;
   }
 

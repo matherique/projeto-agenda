@@ -3,95 +3,55 @@
 #include <string>
 #include <cstring>
 #include <typeinfo>
-#define DB "database.abc"
+#define DB "teste.b"
 using namespace std;
 
 struct cliente {
-  string nome;
-  int dia;
-  int hora;
+  string nome = "matheus h";
+  int dia = 2;
+  int hora = 12;
 };
 
-void cadastrar (string nome) {
-  char n[100];
-  fstream file(DB, ios_base::out | ios_base::binary | ios_base::app);
-  strcpy(n, nome.c_str());
-  file.write(reinterpret_cast<char*>(&n), sizeof(n));
-  file.close();
-}
 
-void listar(struct cliente lista[]) {
-  char n[120];
-  fstream file2(DB, ios_base::in | ios_base::binary);
-  file2.seekg(0, ios_base::end);
-
-  long TAMANHO = file2.tellg();
-  long NR_REGS = TAMANHO / sizeof(n);
-
-  for (int i = 0; i < NR_REGS; i++) {
-    string nome;
-    file2.seekg(i * sizeof(n), ios_base::beg);
-    file2.read(reinterpret_cast<char*>(&n), sizeof(n));
-
-    nome.assign(n);
-
-    string n = nome.substr(0, nome.length() - 4);
-    int d = stoi(nome.substr(nome.length() - 4, 2));
-    int h = stoi(nome.substr(nome.length() - 2));
-    lista[i].nome = n;
-    lista[i].dia = d;
-    lista[i].hora = h;
-  }
-  file2.close();
-}
-
-int pegaQtdRegistros(void) {
-  char n[120];
-  fstream file2("teste2.t", ios_base::in | ios_base::binary);
-  file2.seekg(0, ios_base::end);
-  long TAMANHO = file2.tellg();
-  long NR_REGS = TAMANHO / sizeof(n);
-  file2.close();
-  return NR_REGS;
-}
-
-string adicionaZero(int number) {
-  string n = to_string(number);
-  if (n.length() == 1) {
-      return "0" + n;
-  }
-  return n;
-}
-
-string  converteStructParaString( cliente dados) {
-  string ret, nome, dia, hora;
-  nome = dados.nome;
-  dia = adicionaZero(dados.dia);
-  hora = adicionaZero(dados.hora);
-
-  return nome + dia + hora;
+void cadastrar(struct cliente dados) {
+  ofstream arquivo(DB, ios_base::binary | ios_base::app);
+  arquivo.write(reinterpret_cast<char*>(&dados.nome), sizeof(dados.nome));
+  arquivo.close();
 }
 
 int main(void) {
-
   cliente teste;
 
-  teste.nome = "matheus henrique";
-  teste.dia = 1;
-  teste.hora = 8;
+  cadastrar(teste);
 
-  string result = converteStructParaString(teste);
-  cadastrar(result);
-  int n = pegaQtdRegistros();
-  cliente lista[n];
-  listar(lista);
+  ifstream arquivo(DB, ios_base::binary);
+  cliente dados;
 
-  long qtd = sizeof(lista) / (32 + 4 + 4);
-  for (int i = 0; i < qtd; i++) {
-    cout << "Nome: " << lista[i].nome << endl;
-    cout << "Data: " << lista[i].dia << endl;
-    cout << "Hora: " << lista[i].hora << endl;
+  arquivo.seekg(0, ios_base::end);
+
+  long tamanho = arquivo.tellg();
+  long numero_registros = tamanho / sizeof(dados);
+
+  for (int i = 0; i < numero_registros; i++) {
+//    char nome[51];
+    c nome;
+    int dia, hora;
+    cout << i * sizeof(nome) << " - " << sizeof(nome) << endl;
+    arquivo.seekg(i * sizeof(nome), ios_base::beg);
+    arquivo.read(reinterpret_cast<char*>(&nome), sizeof(nome));
+
+//    arquivo.seekg((i * sizeof(dados)) + sizeof(nome), ios_base::beg);
+//    arquivo.read(reinterpret_cast<char*>(&dia), sizeof(dia));
+
+//    arquivo.seekg((i * sizeof(dados)) + sizeof(nome) + sizeof(dia), ios_base::beg);
+//    arquivo.read(reinterpret_cast<char*>(&hora), sizeof(hora));
+
+    cout << "Nome: " << nome << endl;
+    cout << "Data: " << dia << endl;
+    cout << "Hora: " << hora << endl;
     cout << "=====================================================" << endl;
   }
+  arquivo.close();
+
   return 0;
 }
