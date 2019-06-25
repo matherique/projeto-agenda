@@ -10,27 +10,10 @@ using namespace std;
 int opcao = 0;
 int rows, cols;
 
-cliente c[31][10];
 
 void mensagem(string mensagem) {
   position(rows - 3, 1);
   cout << mensagem << endl;
-}
-
-void atualizaLista(void) {
-  int n = bancodados::qtdCadastrados();
-  cliente clientes[n];
-  bancodados::listar(clientes);
-
-  for (int x = 0; x < n; x++) {
-    for (int i = 0; i < 31; i++) {
-      for (int j = 0; j < 10; j++) {
-        if (clientes[x].dia == (i + 1) && clientes[x].hora == (j + 8) && clientes[x].status == true) {
-          c[i][j] = clientes[x];
-        }
-      }
-    }
-  }
 }
 
 void cabecalho(void) {
@@ -41,7 +24,6 @@ void cabecalho(void) {
 }
 
 void exibirMenu(void) {
-  int o;
   cabecalho();
   cout << "MENU PRINCIPAL" << endl;
   cout << "\n\n";
@@ -50,8 +32,7 @@ void exibirMenu(void) {
   cout << "[3] LISTAR MARCACOES DO DIA" << endl;
   cout << "[4] CLIENTES MARCADOS NO DIA" << endl;
   cout << "[5] MAPA DOS HORARIOS LIVRES" << endl;
-  cout << "[6] DEBUG" << endl;
-  cout << "[7] FIM DO PROGRAMA" << endl;
+  cout << "[6] FIM DO PROGRAMA" << endl;
   cout << '\n';
   cout << "==> ";
   cin >> opcao;
@@ -68,11 +49,29 @@ void voltar(void){
   return;
 }
 
-void pegaDia(int &dia) {
-  bool valido = false;
+bool horarioOcupado(int dia, int hora) {
+  int i = 0;
+  bool ocupado = false;
+
+  int n = bancodados::qtdCadastrados();
+  cliente clientes[n];
+  bancodados::listar(clientes);
+
+  while (i < n){
+    if (clientes[i].dia == dia && clientes[i].hora == hora && clientes[i].status == true) {
+      ocupado = true;
+      break;
+    }
+    i++;
+  }
+  return ocupado;
+}
+
+int pegaDia() {
+  int dia;
   cout << "INFORME O DIA .....: ";
 
-  while (!valido) {
+  while (true) {
     cin >> dia;
     cin.ignore(80, '\n');
 
@@ -82,89 +81,95 @@ void pegaDia(int &dia) {
     position(7, 22);
     clearline();
   }
+  return dia;
 }
 
-void pegaHora(int &hora, int dia, bool validaOcupado = true) {
-  bool valido = false;
+int pegaHora() {
+  int hora;
   cout << "INFORME A HORA ....: ";
 
-  while (!valido) {
+  while (true) {
     cin >> hora;
     cin.ignore(80, '\n');
-    if (hora < 8 || hora > 17) {
-      mensagem("HORA INVALIDA");
-      position(8, 22);
-      clearline();
-    } else if (c[dia - 1][hora - 8].nome != "" && validaOcupado) {
-      mensagem("HORARIO OCUPADO");
-      position(8, 22);
-      clearline();
-    } else {
-      valido = true;
-    }
+    if (hora >= 8 &&  hora <= 17) break;
+
+    mensagem("HORA INVALIDA");
+    position(8, 22);
+    clearline();
+//    if (hora < 8 || hora > 17) {
+//      mensagem("HORA INVALIDA");
+//      position(8, 22);
+//      clearline();
+//    } else {
+//      valido = true;
+//    }
   }
+
+  return hora;
 }
 
 void marcarAtendimento(void) {
-  atualizaLista();
   char nome[51];
-  cliente cad_cliente;
+  int dia, hora;
+  cliente cadastrarCliente;
 
   cabecalho();
   cout << "MARCAR ATENDIMENTO" << endl;
   cout << "\n\n";
 
-  pegaDia(cad_cliente.dia);
-  pegaHora(cad_cliente.hora, cad_cliente.dia);
+  dia = pegaDia();
+  hora = pegaHora();
 
-  cout << "INFORME O NOME ....: ";
-  cin.getline(nome, sizeof(nome));
+  if (horarioOcupado(dia, hora)) {
+    mensagem("HORARIO OCUPADO");
+  } else {
+    cout << "INFORME O NOME ....: ";
+    cin.getline(nome, sizeof(nome));
 
-  cad_cliente.nome.assign(nome);
+    cadastrarCliente.nome.assign(nome);
+    cadastrarCliente.dia = dia;
+    cadastrarCliente.hora = hora;
 
-  bancodados::cadastrar(cad_cliente);
+    bancodados::cadastrar(cadastrarCliente);
 
-
-  mensagem("SUCESSO: HORARIO AGENDADO" );
+    mensagem("SUCESSO: HORARIO AGENDADO" );
+  }
   voltar();
 }
 
 void desmarcarAtendimento(void) {
-  atualizaLista();
   char resp;
-  cliente rm_cliente;
+  int dia, hora;
 
   cabecalho();
   cout << "DESMARCAR ATENDIMENTO" << endl;
   cout << "\n\n";
 
-  pegaDia(rm_cliente.dia);
-  pegaHora(rm_cliente.hora, rm_cliente.dia, false);
+  dia = pegaDia();
+  hora = pegaHora();
 
   int n = bancodados::qtdCadastrados();
   cliente clientes[n];
   bancodados::listar(clientes);
 
-  int id_cliente = -1;
+  int posicao = -1;
   for (int i = 0; i < n; i++) {
-    if (clientes[i].status == true && clientes[i].dia == rm_cliente.dia && clientes[i].hora == rm_cliente.hora) {
-      id_cliente = i;
+    if (clientes[i].status == true && clientes[i].dia == dia && clientes[i].hora == hora) {
+      posicao = i;
     }
   }
 
-  if (id_cliente >= 0) {
-    cout << "HORAIO RESERVADO PARA " << clientes[id_cliente].nome << "."<< endl;
+  if (posicao >= 0) {
+    cout << "HORAIO RESERVADO PARA " << clientes[posicao].nome << "."<< endl;
     cout << "DESMARCA? (S/N): ";
     cin.get(resp);
     cin.ignore(80, '\n');
 
     if (toupper(resp) == 'S') {
-      cliente cliente_atualizado;
-      cliente_atualizado.nome = clientes[id_cliente].nome;
-      cliente_atualizado.dia = clientes[id_cliente].dia;
-      cliente_atualizado.hora = clientes[id_cliente].hora;
-      cliente_atualizado.status = false;
-      bancodados::atualizar(cliente_atualizado, id_cliente);
+      cliente clienteAtualizar = clientes[posicao];
+      clienteAtualizar.status = false;
+
+      bancodados::atualizar(clienteAtualizar, posicao);
 
       mensagem("HORARIO LIBERADO");
       voltar();
@@ -178,35 +183,41 @@ void desmarcarAtendimento(void) {
 }
 
 void listarMarcacoesDia(void) {
-  int dia, i, horas[10];
+  int dia, horas[10];
 
   cabecalho();
   cout << "CLIENTES DO DIA" << endl;
   cout << "\n\n";
 
-  pegaDia(dia);
+  dia = pegaDia();
 
   cout << '\n';
   cout << "LISTAGEM DE CLIENTES" << endl;
   cout << '\n';
 
-//  int n = bancodados::qtdCadastrados();
-//  cliente clientes[n];
-//  bancodados::listar(clientes);
-//  // TODO: Muita gambibarra, preciso ver um jeito melhor de fazer isso
-//  for (i = 0; i < n; i++) {
-//    if (clientes[i].status == true && clientes[i].dia == dia) {
-//      horas[clientes[i].hora - 8] = i * (-1);
-//    }
-//  }
+  int n = bancodados::qtdCadastrados();
+  cliente clientes[n];
+  bancodados::listar(clientes);
 
-  for (i = 0; i < 10; i++) {
-    if (c[dia - 1][i].nome != "") {
-      cout << setw(3) << i + 8 << " HORAS   " << c[dia - 1][i].nome<< endl;
+  for (int i = 0; i < 10; i++)
+    horas[i] = -1;
+
+  for (int i = 0; i < n; i++) {
+    int h = clientes[i].hora - 8;
+    if (clientes[i].status == true && clientes[i].dia == dia) {
+      horas[h] = i;
+    }
+  }
+
+  for (int i = 0; i < 10; i++) {
+    if (horas[i] >= 0) {
+      int index = horas[i];
+      cout << setw(3) << i + 8 << " HORAS   " << clientes[index].nome<< endl;
     } else {
       cout << setw(3) << i + 8 << " HORAS" << endl;
     }
   }
+
   voltar();
 }
 
@@ -227,7 +238,6 @@ void clientesMarcadosDia (void) {
   cout << '\n';
   cout << "HORARIOS PARA O CLIENTE " << nome << endl;
   cout << '\n';
-
 
   int n = bancodados::qtdCadastrados();
   cliente clientes[n];
@@ -285,40 +295,21 @@ void mapaHorarios (void) {
   voltar();
 }
 
-void debug(void) {
-  for (int i = 0; i < 31; i++) {
-    for (int j = 0; j < 10; j++) {
-      if(c[i][j].nome != "") {
-        if (c[i][j].status) {
-            cout << "ATIVADO ";
-        } else  {
-          cout << "DESATIVADO ";
-        }
-        cout << "c[" << i << "][" << j << "] =  nome: " << c[i][j].nome << " dia: " << i + 1 << " hora: " << j + 8 << endl;
-        cout << "========================================================================" << endl;
-      }
-    }
-  }
-
-  voltar();
-}
-
 int main (void) {
   bancodados::start();
   getRowCols(rows, cols);
   clear();
 
-  while (opcao != 7) {
+  while (opcao != 6) {
     exibirMenu();
     clear();
-    if (opcao != 7){
+    if (opcao != 6){
       switch (opcao){
         case  1: marcarAtendimento();        break;
         case  2: desmarcarAtendimento();     break;
         case  3: listarMarcacoesDia();       break;
         case  4: clientesMarcadosDia();      break;
         case  5: mapaHorarios();             break;
-        case  6: debug();             break;
       }
     }
   }

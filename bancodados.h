@@ -95,16 +95,8 @@ namespace bancodados {
       clientes[i].hora = hora;
       clientes[i].status = (status == 1) ? true : false;
 
-
-      if (debug) {
-        std::cout << "Nome: " << nome << std::endl;
-        std::cout << "Data: " << dia << std::endl;
-        std::cout << "Hora: " << hora << std::endl;
-        std::cout << "Status: " << status << std::endl;
-        std::cout << "=====================================================" << std::endl;
-      }
     }
-
+    arquivo.close())
     return;
   }
 
