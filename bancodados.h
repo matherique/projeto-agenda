@@ -44,9 +44,9 @@ namespace bancodados {
     return numero_registros;
   }
 
-  // convert struct para string para cadastrar
-  std::string _converteStructParaString( cliente dados) {
-    std::string ret, nome, dia, hora, status;
+  // concatena campos da struct em uma string separando dados por -
+  std::string _converteParaString(struct cliente dados) {
+    std::string nome, dia, hora, status;
 
     nome = dados.nome;
     dia = _adicionaZero(dados.dia);
@@ -56,12 +56,10 @@ namespace bancodados {
     return nome + "-" + dia + "-" + hora + "-" +status;
   }
 
-  // matheus henrique-12-12-1
-
   // cadastra struct convertendo para char
   void cadastrar (struct cliente dadosCliente){
     char dados[TAMANHO_CHAR];
-    std::string dadosCadastro = _converteStructParaString(dadosCliente);
+    std::string dadosCadastro = _converteParaString(dadosCliente);
 
     strcpy(dados, dadosCadastro.c_str());
 
@@ -71,7 +69,7 @@ namespace bancodados {
   }
 
   // lista todos clientes cadastrados por passagem de parametro por referencia
-  void listar(struct cliente clientes[], bool debug = false) {
+  void listar(struct cliente clientes[]) {
     char dados[TAMANHO_CHAR];
     std::ifstream arquivo(DB, std::ios_base::binary);
 
@@ -105,7 +103,7 @@ namespace bancodados {
   // atualiza uma determinada linha do arquivo
   void atualizar(struct cliente dadosCliente, int pos) {
     char dados[TAMANHO_CHAR];
-    std::string dadosCadastro = _converteStructParaString(dadosCliente);
+    std::string dadosCadastro = _converteParaString(dadosCliente);
 
     strcpy(dados, dadosCadastro.c_str());
 

@@ -10,7 +10,6 @@ using namespace std;
 int opcao = 0;
 int rows, cols;
 
-
 void mensagem(string mensagem) {
   position(rows - 3, 2);
   cout << mensagem << endl;
@@ -21,31 +20,35 @@ void cabecalho(string titulo) {
   color(0, 14);
   cout << "*** AGENDA PARA MARCACAO DE ATENDIMENTO ***" << endl;
   color(0, 15);
-  cout << "\n\n";
+
   int cpos = (cols - titulo.size()) / 2;
-  position(3, cpos);
+  position(4, cpos);
   cout << titulo << endl;
   cout << "\n\n";
 }
 
 void exibirMenu(void) {
   cabecalho("MENU PRINCIPAL");
-  position(6, (cols - 43) / 2);  cout << "    [1] MARCAR ATENDIMENTO" << endl;
-  position(7, (cols - 43) / 2);  cout << "    [2] DESMARCAR ATENDIMENTO" << endl;
-  position(8, (cols - 43) / 2);  cout << "    [3] LISTAR MARCACOES DO DIA" << endl;
-  position(9, (cols - 43) / 2);  cout << "    [4] CLIENTES MARCADOS NO DIA" << endl;
-  position(10, (cols - 43) / 2); cout << "    [5] MAPA DOS HORARIOS LIVRES" << endl;
-  position(11, (cols - 43) / 2); cout << "    [6] FIM DO PROGRAMA" << endl;
-  position(12, (cols - 43) / 2); cout << '\n';
-  position(13, (cols - 43) / 2); cout << "    ==> ";
+  position(7, (cols - 43) / 2);   cout << "    [1] MARCAR ATENDIMENTO" << endl;
+  position(8, (cols - 43) / 2);   cout << "    [2] DESMARCAR ATENDIMENTO" << endl;
+  position(9, (cols - 43) / 2);   cout << "    [3] LISTAR MARCACOES DO DIA" << endl;
+  position(10, (cols - 43) / 2);  cout << "    [4] CLIENTES MARCADOS NO DIA" << endl;
+  position(11, (cols - 43) / 2);  cout << "    [5] MAPA DOS HORARIOS LIVRES" << endl;
+  position(12, (cols - 43) / 2);  cout << "    [6] FIM DO PROGRAMA" << endl;
+  position(14, (cols - 43) / 2);  cout << "    ==> ";
   cin >> opcao;
   cin.ignore(80, '\n');
+  if(cin.fail()) {
+    cin.clear();
+    cin.ignore(10000,'\n');
+  }
+
 }
 
 void voltar(void){
   position(rows - 2, 2);
   color(0, 14);
-  cout << "Tecle <Enter> para ir ao menu";
+  cout << "Tecla <Enter> para ir ao menu";
   color(0, 15);
   cin.get();
   clear();
@@ -63,7 +66,6 @@ bool horarioOcupado(int dia, int hora) {
   while (i < n){
     if (clientes[i].dia == dia && clientes[i].hora == hora && clientes[i].status == true) {
       ocupado = true;
-      break;
     }
     i++;
   }
@@ -72,40 +74,48 @@ bool horarioOcupado(int dia, int hora) {
 
 int pegaDia() {
   int dia;
+  bool valido = false;
   cout << " INFORME O DIA .....: ";
-
-  while (true) {
+  while (!valido) {
     cin >> dia;
     cin.ignore(80, '\n');
 
-    if (dia >= 1 && dia <= 31) break;
+    if(cin.fail()) {
+      cin.clear();
+      cin.ignore(10000,'\n');
+    }
 
-    mensagem("DIA INVALIDO");
-    position(7, 22);
-    clearline();
+    if (dia < 1 || dia > 31) {
+      mensagem("DIA INVALIDO");
+      position(7, 23);
+      clearline();
+    } else {
+      valido = true;
+    }
   }
   return dia;
 }
 
 int pegaHora() {
   int hora;
+  bool valido = false;
   cout << " INFORME A HORA ....: ";
-
-  while (true) {
+  while (!valido) {
     cin >> hora;
     cin.ignore(80, '\n');
-    if (hora >= 8 &&  hora <= 17) break;
 
-    mensagem("HORA INVALIDA");
-    position(8, 22);
-    clearline();
-//    if (hora < 8 || hora > 17) {
-//      mensagem("HORA INVALIDA");
-//      position(8, 22);
-//      clearline();
-//    } else {
-//      valido = true;
-//    }
+    if(cin.fail()) {
+      cin.clear();
+      cin.ignore(10000,'\n');
+    }
+
+    if (hora < 8 || hora > 17) {
+      mensagem("HORA INVALIDA");
+      position(8, 23);
+      clearline();
+    } else {
+      valido = true;
+    }
   }
 
   return hora;
@@ -117,7 +127,6 @@ void marcarAtendimento(void) {
   cliente cadastrarCliente;
 
   cabecalho("MARCAR ATENDIMENTO");
-
 
   dia = pegaDia();
   hora = pegaHora();
@@ -160,7 +169,7 @@ void desmarcarAtendimento(void) {
   }
 
   if (posicao >= 0) {
-    cout << " HORAIO RESERVADO PARA " << clientes[posicao].nome << "."<< endl;
+    cout << " HORARIO RESERVADO PARA " << clientes[posicao].nome << "."<< endl;
     cout << " DESMARCA? (S/N): ";
     cin.get(resp);
     cin.ignore(80, '\n');
@@ -175,7 +184,7 @@ void desmarcarAtendimento(void) {
       voltar();
     }
   } else {
-    mensagem("ESTE HORARIO ESTA LIBERADO");
+    mensagem("ESTE HORARIO ESTA LIBERADO!");
     voltar();
   }
 
@@ -240,7 +249,7 @@ void clientesMarcadosDia (void) {
   bancodados::listar(clientes);
 
   for (int i = 0; i < n; i++) {
-    if (clientes[i].status == true && clientes[i].nome.compare(nome) >= 0) {
+    if (clientes[i].status == true && clientes[i].nome == nome) {
       cout << " DIA " << clientes[i].dia << " AS " << clientes[i].hora << " HORAS " << endl;
     }
   }
@@ -271,11 +280,11 @@ void mapaHorarios (void) {
 
   cabecalho("MAPA DOS HORARIOS OCUPADOS");
   cout << setiosflags(ios::right);
-  position(6, (cols - 38) / 2); cout << setw(5) << " HORA" << setw(11) << "1" << setw(10) << "2" << setw(11) << "3 " << endl;
-  position(7, (cols - 38) / 2); cout << setw(5) << "" << setw(11) << "1234567890" << setw(10) << "1234567890" << setw(10) << "12345678901" << endl;
+  position(7, (cols - 38) / 2); cout << setw(5) << " HORA" << setw(11) << "1" << setw(10) << "2" << setw(11) << "3 " << endl;
+  position(8, (cols - 38) / 2); cout << setw(5) << "" << setw(11) << "1234567890" << setw(10) << "1234567890" << setw(10) << "12345678901" << endl;
 
   for (int j = 0; j < 10; j++) {
-    position(8 + j, (cols - 38) / 2);
+    position(9 + j, (cols - 38) / 2);
     cout << setw(5) << j + 8 << " ";
     for (int i = 0; i < 31; i++) {
       if (horarios[i][j] == 0)
@@ -292,7 +301,6 @@ void mapaHorarios (void) {
 int main (void) {
   bancodados::start();
   getRowCols(rows, cols);
-  clear();
 
   while (opcao != 6) {
     exibirMenu();
